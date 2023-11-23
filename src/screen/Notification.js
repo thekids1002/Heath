@@ -18,9 +18,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uocThuocStore from '../store/UocThuocStore';
 import LichKhamStore from '../store/LichKhamStore';
 import lichKhamStore from '../store/LichKhamStore';
+
 const dataUocThuocArr = [];
 const dataLichKhamArr = [];
 const Notification = () => {
+
+
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedItem2, setSelectedItem2] = useState(null);
 
@@ -123,8 +127,15 @@ const Notification = () => {
   const [time, setTime] = useState('');
 
   const loadItems = day => {};
-
+  function isTimeFormatValid(time) {
+    const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+    return regex.test(time);
+  }
   const handleSaveDataUongThuoc = async () => {
+    if(!isTimeFormatValid(time)){
+      Alert.alert("Sai định dạng giờ")
+      return;
+    }
     if (selectedDay === null) {
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
@@ -164,9 +175,15 @@ const Notification = () => {
     };
     changeDay('2023-01-01');
     setSelectedDay(temp);
+
+   
   };
 
   const handleSaveDataLichKham = async () => {
+    if(!isTimeFormatValid(time)){
+      Alert.alert("Sai định dạng giờ")
+      return;
+    }
     if (selectedDay === null) {
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
