@@ -35,16 +35,16 @@ export default function App() {
     let icon = '';
 
     switch (routeName) {
-      case 'title1':
+      case 'Trang chủ':
         icon = 'home';
         break;
-      case 'title2':
-        icon = 'settings';
+      case 'Tra cứu':
+        icon = 'search';
         break;
-      case 'title5':
+      case 'Tài khoản':
         icon = 'person';
         break;
-      case 'title4':
+      case 'Nhắc nhở':
         icon = 'notifications';
         break;
     }
@@ -83,7 +83,7 @@ export default function App() {
         height={55}
         circleWidth={50}
         bgColor="white"
-        initialRouteName="title1"
+        initialRouteName="Trang chủ"
         borderTopLeftRight
         renderCircle={({ selectedTab, navigate }) => (
           <Animated.View style={styles.btnCircleUp}>
@@ -100,24 +100,24 @@ export default function App() {
         tabBar={renderTabBar}
       >
         <CurvedBottomBar.Screen
-          name="title1"
+          name="Trang chủ"
           position="LEFT"
           component={() => <HomeScreen/>}
         />
         <CurvedBottomBar.Screen
-          name="title2"
+          name="Tra cứu"
           component={() => <HomeScreen />}
           position="RIGHT"
         />
 
 
         <CurvedBottomBar.Screen
-          name="title4"
+          name="Nhắc nhở"
           position="LEFT"
           component={() => <Notification />}
         />
         <CurvedBottomBar.Screen
-          name="title5"
+          name="Tài khoản"
           component={() => <HomeScreen />}
           position="RIGHT"
         />
