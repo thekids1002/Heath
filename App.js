@@ -12,6 +12,7 @@ import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from "./src/screen/HomeScreen";
+import Notification from './src/screen/Notification';
 
 const Screen1 = () => {
   return <View style={styles.screen1} />;
@@ -113,7 +114,7 @@ export default function App() {
         <CurvedBottomBar.Screen
           name="title4"
           position="LEFT"
-          component={() => <HomeScreen />}
+          component={() => <Notification />}
         />
         <CurvedBottomBar.Screen
           name="title5"
