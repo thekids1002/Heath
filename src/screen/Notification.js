@@ -346,6 +346,7 @@ const Notification = () => {
                       value={formatTimeToAmPm(selectedItem.time)}
                       onChangeText={text => setTime(text)}></TextInput>
                   </View>
+                  
 
                   <View
                     style={{
@@ -687,10 +688,12 @@ const Notification = () => {
               <View style={styles.itemContent}>
                 <Text style={styles.itemText}>{item.title}</Text>
                 <Text style={styles.itemText}>{item.description}</Text>
-                <Text style={styles.itemText}>
+                
+              </View>
+
+              <Text style={styles.itemText}>
                   {formatTimeToAmPm(item.time)}
                 </Text>
-              </View>
             </TouchableOpacity>
           ))}
 
@@ -716,10 +719,11 @@ const Notification = () => {
               <View style={styles.itemContent}>
                 <Text style={styles.itemText}>{item.title}</Text>
                 <Text style={styles.itemText}>{item.description}</Text>
-                <Text style={styles.itemText}>
+                
+              </View>
+              <Text style={styles.itemText}>
                   {formatTimeToAmPm(item.day)}
                 </Text>
-              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -810,6 +814,8 @@ const styles = StyleSheet.create({
     // Styles for your image
   },
   verticalLine: {
+   
+   
     height: '100%',
     width: 1,
     backgroundColor: 'black',
@@ -820,8 +826,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-end',
+    display : 'flex',
+    justifyContent : "center",
+    textAlign : "center",
   },
   itemText: {
+    justifyContent : "center",
+    alignItems : "center",
     color: 'black',
     // Add more styling for text if needed
   },
