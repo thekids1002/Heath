@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Alert,
     Image,
@@ -14,23 +14,30 @@ import {
 } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const dataUocThuocArr = [
     
 ];
+const dataUocThuocArrGlobal = [
+
+];
 
 const Notification = () => {
+
+    
+
     const [modalVisible, setModalVisible] = useState(false);
     const [modalNhapThuoc, setmodalNhapThuoc] = useState(false);
 
     const [dataUocThuoc, setDataUocThuoc] = useState(dataUocThuocArr);
+    const [dataUocThuocGlobal, setDataUocThuocGlobal] = useState(dataUocThuocArrGlobal);
 
     const openModalNhapThuoc = () => setmodalNhapThuoc(true);
     const closeModalNhapThuoc = () => {
         setmodalNhapThuoc(false);
         handleSaveDataUongThuoc();
     };
-
+   
     const openModal = () => setModalVisible(true);
     const closeModal = () => setModalVisible(false);
 
@@ -38,6 +45,36 @@ const Notification = () => {
         const currentDate = new Date();
         return currentDate.toISOString().split('T')[0]; // Định dạng YYYY-MM-DD
     });
+
+     // AsyncStorage functions
+     const storeData = async (value) => {
+        try {
+            const jsonValue = JSON.stringify(value);
+            await AsyncStorage.setItem('my-key', jsonValue);
+        } catch (e) {
+            console.error('Failed to save data', e);
+        }
+    };
+
+    const getData = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('my-key');
+            return jsonValue != null ? JSON.parse(jsonValue) : [];
+        } catch (e) {
+            console.error('Failed to read data', e);
+        }
+    };
+
+    // Load data from AsyncStorage on component mount
+    useEffect(() => {
+        const fetchData = async () => {
+            const storedData = await getData();
+            setDataUocThuocGlobal(storedData);
+        };
+
+        fetchData();
+    }, []);
+
 
     const formatTimeToAmPm = dateString => {
         const date = new Date(dateString);
@@ -80,14 +117,14 @@ const Notification = () => {
         selectedDateTime.setMinutes(selectedDateTime.getMinutes() - selectedDateTime.getTimezoneOffset() - 420);
         
         const newItem = {
-            id: String(dataUocThuoc.length + 1), // Tạo ID mới duy nhất
+            id: String(dataUocThuocArrGlobal.length + 1), // Tạo ID mới duy nhất
             title: medicineName,
             description: details,
             day: selectedDay,
             time : selectedDateTime.toISOString(),
             isDone: false,
         };
-        setDataUocThuoc([...dataUocThuoc, newItem]);
+        setDataUocThuocGlobal([...dataUocThuocArrGlobal, newItem]);
     };
 
     const renderEmptyData = () => {
@@ -97,9 +134,32 @@ const Notification = () => {
     const handleDayPress = day => {
         // Xử lý khi ngày được chọn
         const selectedDate = new Date(day.dateString);
-        setSelectedDay(selectedDate); // Lưu ngày đã chọn vào state
-    };
+        setSelectedDay(selectedDate); 
+      
+    }; 
+    
+    useEffect(() => {
+        console.log(dataUocThuocGlobal);
+        const filteredData = dataUocThuocGlobal.filter(item => {
+          const itemDate = new Date(item.day);
+          const selectedDate = new Date(selectedDay);
+          return itemDate.toDateString() === selectedDate.toDateString();
+        });
+        setDataUocThuoc(filteredData);
+        storeData(dataUocThuocGlobal);
+        
+      }, [selectedDay]);
+      useEffect(() => {
+        const filteredData = dataUocThuocGlobal.filter(item => {
+          const itemDate = new Date(item.day);
+          const selectedDate = new Date(selectedDay);
+          return itemDate.toDateString() === selectedDate.toDateString();
+        });
+        setDataUocThuoc(filteredData);
+        storeData(dataUocThuocGlobal);
+      }, [dataUocThuocGlobal]);
 
+      
     return (
         <SafeAreaView>
             <ScrollView>
@@ -278,7 +338,7 @@ const Notification = () => {
                     ))}
                 </View>
             </ScrollView>
-            {   console.log(dataUocThuoc)}
+         
         </SafeAreaView>
     );
 };
