@@ -22,8 +22,10 @@ const dataUocThuocArr = [];
 const dataLichKhamArr = [];
 const Notification = () => {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem2, setSelectedItem2] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
   const [modalNhapThuoc, setmodalNhapThuoc] = useState(false);
   const [modalLichKham, setModalLichKham] = useState(false);
   const [dataUocThuoc, setDataUocThuoc] = useState(dataUocThuocArr);
@@ -36,11 +38,22 @@ const Notification = () => {
     await handleSaveDataUongThuoc();
   };
 
-
-  const closeModalUocThuoc = (selectedItem) => {
+  const closeModalUocThuoc = selectedItem => {
     setSelectedItem(null);
     uocThuocStore.updateIsDone(selectedItem);
     setModalVisible(false);
+    const temp = selectedDay;
+    const changeDay = newDay => {
+      setSelectedDay(newDay);
+    };
+    changeDay('2023-01-01');
+    setSelectedDay(temp);
+  };
+
+  const closeModalLichKham2 = selectedItem => {
+    setSelectedItem2(null);
+    lichKhamStore.updateIsDone(selectedItem);
+    setModalVisible2(false);
     const temp = selectedDay;
     const changeDay = newDay => {
       setSelectedDay(newDay);
@@ -58,6 +71,8 @@ const Notification = () => {
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
+  const openModal2 = () => setModalVisible2(true);
+  const closeModal2 = () => setModalVisible2(false);
 
   const [selectedDay, setSelectedDay] = useState(() => {
     const currentDate = new Date();
@@ -242,12 +257,12 @@ const Notification = () => {
                     </Text>
                     <TextInput
                       style={styles.input}
-                     editable = {false}
+                      editable={false}
                       value={selectedItem.title}
                       onChangeText={text => handleInputChange('title', text)}
                     />
-                    
-                  </View><View
+                  </View>
+                  <View
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -256,39 +271,39 @@ const Notification = () => {
                     <Text style={{flex: 0.5, color: 'black'}}>Chi Tiết</Text>
                     <TextInput
                       style={styles.input}
-                    editable = {false}
+                      editable={false}
                       value={selectedItem.description}
                       onChangeText={text => setDetails(text)}></TextInput>
                   </View>
-                  
+
                   <View
                     style={{
-                       
                       display: 'flex',
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
                     <Text style={{flex: 0.5, color: 'black'}}>Thời gian</Text>
                     <TextInput
-                     style={styles.input}
-                      editable = {false}
-                      value={  formatTimeToAmPm(selectedItem.time)}
+                      style={styles.input}
+                      editable={false}
+                      value={formatTimeToAmPm(selectedItem.time)}
                       onChangeText={text => setTime(text)}></TextInput>
                   </View>
 
                   <View
                     style={{
-                       
                       display: 'flex',
                       flexDirection: 'row',
                       alignItems: 'center',
-                      justifyContent : 'center',
-                      paddingBottom : 14
+                      justifyContent: 'center',
+                      paddingBottom: 14,
                     }}>
-                    <Text style={{flex: 0.5, color: 'black'}}>{selectedItem.isDone ? "Đã uống thuốc" : "Chưa uống thuốc"}</Text>
-                    
+                    <Text style={{flex: 0.5, color: 'black'}}>
+                      {selectedItem.isDone
+                        ? 'Đã uống thuốc'
+                        : 'Chưa uống thuốc'}
+                    </Text>
                   </View>
-
                 </View>
               )}
 
@@ -306,8 +321,97 @@ const Notification = () => {
                   }}
                   onPress={() => {
                     closeModalUocThuoc(selectedItem);
-                  }}>  
+                  }}>
                   <Text style={{color: 'white'}}>Đã uống</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible2}
+          onRequestClose={closeModal2}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              {selectedItem2 && (
+                <View style={{display: 'flex', flexDirection: 'column'}}>
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{flex: 0.5, color: 'black'}}>
+                      Nhập tên thuốc
+                    </Text>
+                    <TextInput
+                      style={styles.input}
+                      editable={false}
+                      value={selectedItem2.title}
+                      onChangeText={text => handleInputChange('title', text)}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{flex: 0.5, color: 'black'}}>Chi Tiết</Text>
+                    <TextInput
+                      style={styles.input}
+                      editable={false}
+                      value={selectedItem2.description}
+                      onChangeText={text => setDetails(text)}></TextInput>
+                  </View>
+
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{flex: 0.5, color: 'black'}}>Thời gian</Text>
+                    <TextInput
+                      style={styles.input}
+                      editable={false}
+                      value={formatTimeToAmPm(selectedItem2.time)}
+                      onChangeText={text => setTime(text)}></TextInput>
+                  </View>
+
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingBottom: 14,
+                    }}>
+                    <Text style={{flex: 0.5, color: 'black'}}>
+                      {selectedItem2.isDone ? 'Đã khám' : 'Chưa khám'}
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              <View
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: '#66B9BE',
+                    padding: 5,
+                    borderRadius: 5,
+                  }}
+                  onPress={() => {
+                    closeModalLichKham2(selectedItem2);
+                  }}>
+                  <Text style={{color: 'white'}}>Đã khám</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -542,6 +646,10 @@ const Notification = () => {
           {dataLichKham.map(item => (
             <TouchableOpacity
               key={item.id}
+              onPress={() => {
+                setSelectedItem2(item);
+                openModal2();
+              }}
               style={styles.touchableOpacityStyle}>
               <Image
                 source={require('../img/Group53.png')}
