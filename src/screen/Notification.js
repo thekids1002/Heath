@@ -36,6 +36,19 @@ const Notification = () => {
     await handleSaveDataUongThuoc();
   };
 
+
+  const closeModalUocThuoc = (selectedItem) => {
+    setSelectedItem(null);
+    uocThuocStore.updateIsDone(selectedItem);
+    setModalVisible(false);
+    const temp = selectedDay;
+    const changeDay = newDay => {
+      setSelectedDay(newDay);
+    };
+    changeDay('2023-01-01');
+    setSelectedDay(temp);
+  };
+
   const openModalLichKham = () => setModalLichKham(true);
 
   const closeModalLichKham = async () => {
@@ -229,6 +242,7 @@ const Notification = () => {
                     </Text>
                     <TextInput
                       style={styles.input}
+                     editable = {false}
                       value={selectedItem.title}
                       onChangeText={text => handleInputChange('title', text)}
                     />
@@ -242,21 +256,39 @@ const Notification = () => {
                     <Text style={{flex: 0.5, color: 'black'}}>Chi Tiết</Text>
                     <TextInput
                       style={styles.input}
+                    editable = {false}
                       value={selectedItem.description}
                       onChangeText={text => setDetails(text)}></TextInput>
                   </View>
+                  
                   <View
                     style={{
+                       
                       display: 'flex',
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
                     <Text style={{flex: 0.5, color: 'black'}}>Thời gian</Text>
                     <TextInput
-                      style={styles.input}
-                      value={selectedItem.time}
+                     style={styles.input}
+                      editable = {false}
+                      value={  formatTimeToAmPm(selectedItem.time)}
                       onChangeText={text => setTime(text)}></TextInput>
                   </View>
+
+                  <View
+                    style={{
+                       
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent : 'center',
+                      paddingBottom : 14
+                    }}>
+                    <Text style={{flex: 0.5, color: 'black'}}>{selectedItem.isDone ? "Đã uống thuốc" : "Chưa uống thuốc"}</Text>
+                    
+                  </View>
+
                 </View>
               )}
 
@@ -273,9 +305,9 @@ const Notification = () => {
                     borderRadius: 5,
                   }}
                   onPress={() => {
-                    closeModal();
-                  }}>
-                  <Text style={{color: 'white'}}>Nhập</Text>
+                    closeModalUocThuoc(selectedItem);
+                  }}>  
+                  <Text style={{color: 'white'}}>Đã uống</Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -25,6 +25,19 @@ class LichKhamStore {
         this.dataLichKham = this.dataLichKham.filter(lichKham => lichKham.id !== lichKhamId);
     }
 
+    updateIsDone = (item) => {
+        for (let i = 0; i < this.dataLichKham.length; i++) {
+          if ( this.dataLichKham[i].id === item.id) {
+            
+            this.dataLichKham[i].isDone = true;
+      
+            this.storeData(this.dataLichKham);
+      
+            break; 
+          }
+        }
+      };
+
     // Có thể thêm các phương thức khác nếu cần
 }
 
