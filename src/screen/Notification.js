@@ -15,27 +15,38 @@ import {
 import { Agenda } from 'react-native-calendars';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import uocThuocStore from '../store/UocThuocStore';
+import LichKhamStore from '../store/LichKhamStore';
+import lichKhamStore from '../store/LichKhamStore';
 const dataUocThuocArr = [
     
 ];
-const dataUocThuocArrGlobal = [
-
+const dataLichKhamArr = [
+    
 ];
-
 const Notification = () => {
 
-    
+   
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modalNhapThuoc, setmodalNhapThuoc] = useState(false);
-
+    const [modalLichKham, setModalLichKham] = useState(false);
     const [dataUocThuoc, setDataUocThuoc] = useState(dataUocThuocArr);
-    const [dataUocThuocGlobal, setDataUocThuocGlobal] = useState(dataUocThuocArrGlobal);
+    const [dataLichKham, setDataLichKham] = useState(dataLichKhamArr);
 
     const openModalNhapThuoc = () => setmodalNhapThuoc(true);
-    const closeModalNhapThuoc = () => {
+
+    const closeModalNhapThuoc = async () => {
         setmodalNhapThuoc(false);
-        handleSaveDataUongThuoc();
+        await handleSaveDataUongThuoc();
+    };
+
+
+    const openModalLichKham = () => setModalLichKham(true);
+
+    const closeModalLichKham = async () => {
+        setModalLichKham(false);
+        await handleSaveDataLichKham();
     };
    
     const openModal = () => setModalVisible(true);
@@ -69,7 +80,7 @@ const Notification = () => {
     useEffect(() => {
         const fetchData = async () => {
             const storedData = await getData();
-            setDataUocThuocGlobal(storedData);
+           
         };
 
         fetchData();
@@ -93,11 +104,9 @@ const Notification = () => {
 
     const loadItems = day => { };
 
-    const dataLichKham = [
-       
-    ];
 
-    const handleSaveDataUongThuoc = () => {
+
+    const handleSaveDataUongThuoc = async () => {
         if (selectedDay === null) {
             const currentDate = new Date();
             const currentYear = currentDate.getFullYear();
@@ -117,15 +126,59 @@ const Notification = () => {
         selectedDateTime.setMinutes(selectedDateTime.getMinutes() - selectedDateTime.getTimezoneOffset() - 420);
         
         const newItem = {
-            id: String(dataUocThuocArrGlobal.length + 1), // Tạo ID mới duy nhất
+            id: String( uocThuocStore.dataUocThuoc.length + 1), // Tạo ID mới duy nhất
             title: medicineName,
             description: details,
             day: selectedDay,
             time : selectedDateTime.toISOString(),
             isDone: false,
         };
-        setDataUocThuocGlobal([...dataUocThuocArrGlobal, newItem]);
+        await uocThuocStore.addUocThuoc(newItem); // Sử dụng await để chờ hàm thêm item hoàn thành
+        const temp = selectedDay;
+        const changeDay = (newDay) => {
+            setSelectedDay(newDay);
+        };
+        changeDay('2023-01-01');
+        setSelectedDay(temp);
     };
+
+
+    const handleSaveDataLichKham = async () => {
+        if (selectedDay === null) {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+            const currentDay = currentDate.getDate();
+            const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
+            setSelectedDay(currentDateString);
+        }
+        
+        const selectedDateTime = new Date(selectedDay); // Chuyển đổi selectedDay thành đối tượng Date nếu cần
+        const [hour, minute] = time.split(':'); // Phân tách giờ và phút
+        
+        selectedDateTime.setHours(hour);
+        selectedDateTime.setMinutes(minute);
+        
+        // Áp dụng chênh lệch múi giờ UTC+7
+        selectedDateTime.setMinutes(selectedDateTime.getMinutes() - selectedDateTime.getTimezoneOffset() - 420);
+        
+        const newItem = {
+            id: String( lichKhamStore.dataLichKham.length + 1), 
+            title: medicineName,
+            description: details,
+            day: selectedDay,
+            time : selectedDateTime.toISOString(),
+            isDone: false,
+        };
+        await lichKhamStore.addLichKham(newItem); 
+        const temp = selectedDay;
+        const changeDay = (newDay) => {
+            setSelectedDay(newDay);
+        };
+        changeDay('2023-01-01');
+        setSelectedDay(temp);
+    };
+
 
     const renderEmptyData = () => {
         return <View></View>;
@@ -137,27 +190,27 @@ const Notification = () => {
         setSelectedDay(selectedDate); 
       
     }; 
-    
+
+
     useEffect(() => {
-        console.log(dataUocThuocGlobal);
-        const filteredData = dataUocThuocGlobal.filter(item => {
-          const itemDate = new Date(item.day);
-          const selectedDate = new Date(selectedDay);
-          return itemDate.toDateString() === selectedDate.toDateString();
+        const filteredData = uocThuocStore.dataUocThuoc.filter(item => {
+            const itemDate = new Date(item.day);
+            const selectedDate = new Date(selectedDay);
+            return itemDate.toDateString() === selectedDate.toDateString();
         });
         setDataUocThuoc(filteredData);
-        storeData(dataUocThuocGlobal);
-        
-      }, [selectedDay]);
-      useEffect(() => {
-        const filteredData = dataUocThuocGlobal.filter(item => {
-          const itemDate = new Date(item.day);
-          const selectedDate = new Date(selectedDay);
-          return itemDate.toDateString() === selectedDate.toDateString();
+       
+        const filteredData2 = lichKhamStore.dataLichKham.filter(item => {
+            const itemDate = new Date(item.day);
+            const selectedDate = new Date(selectedDay);
+            return itemDate.toDateString() === selectedDate.toDateString();
         });
-        setDataUocThuoc(filteredData);
-        storeData(dataUocThuocGlobal);
-      }, [dataUocThuocGlobal]);
+        setDataLichKham(filteredData2);
+
+
+    }, [selectedDay]);
+
+  
 
       
     return (
@@ -262,7 +315,91 @@ const Notification = () => {
                         </View>
                     </View>
                 </Modal>
-
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalLichKham}
+                    onRequestClose={closeModalLichKham}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <View style={{ display: 'flex', flexDirection: 'column' }}>
+                                <View
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}>
+                                    <Image source={require('../img/Group53.png')} />
+                                </View>
+                                <View
+                                    style={{
+                                        height: 1,
+                                        backgroundColor: 'black',
+                                        marginVertical: 5,
+                                    }}
+                                />
+                                <View style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Text style={{ flex: 0.5, color: 'black' }}>
+                                            Nhập lịch khám
+                                        </Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={medicineName}
+                                            onChangeText={text => setMedicineName(text)}></TextInput>
+                                    </View>
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Text style={{ flex: 0.5, color: 'black' }}>Chi Tiết</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={details}
+                                            onChangeText={text => setDetails(text)}></TextInput>
+                                    </View>
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Text style={{ flex: 0.5, color: 'black' }}>Thời gian</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={time}
+                                            onChangeText={text => setTime(text)}></TextInput>
+                                    </View>
+                                </View>
+                            </View>
+                            <View
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                                <TouchableOpacity
+                                    style={{
+                                        backgroundColor: '#66B9BE',
+                                        padding: 5,
+                                        borderRadius: 5,
+                                    }}
+                                    onPress={() => {
+                                        closeModalLichKham();
+                                    }}>
+                                    <Text style={{ color: 'white' }}>Nhập</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
                 <View style={{ flex: 1 }}>
                     <View style={styles.headerContainer}>
                         <Image
@@ -314,7 +451,7 @@ const Notification = () => {
 
                     <View style={styles.headerContainer2}>
                         <Text style={styles.headerText2}>Lịch Khám Sức Khoẻ</Text>
-                        <TouchableOpacity onPress={() => Alert.alert('ok')}>
+                        <TouchableOpacity onPress={() => setModalLichKham(true)}>
                             <Ionicons name={'add-sharp'} color={'#525664'} size={25} />
                         </TouchableOpacity>
                     </View>
