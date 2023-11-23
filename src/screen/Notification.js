@@ -14,15 +14,30 @@ import {
 } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+const dataUocThuocArr = [
+    
+];
+
 const Notification = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalNhapThuoc, setmodalNhapThuoc] = useState(false);
 
+    const [dataUocThuoc, setDataUocThuoc] = useState(dataUocThuocArr);
+
     const openModalNhapThuoc = () => setmodalNhapThuoc(true);
-    const closeModalNhapThuoc = () => setmodalNhapThuoc(false);
+    const closeModalNhapThuoc = () => {
+        setmodalNhapThuoc(false);
+        handleSaveDataUongThuoc();
+    };
 
     const openModal = () => setModalVisible(true);
     const closeModal = () => setModalVisible(false);
+
+    const [selectedDay, setSelectedDay] = useState(() => {
+        const currentDate = new Date();
+        return currentDate.toISOString().split('T')[0]; // Định dạng YYYY-MM-DD
+    });
 
     const formatTimeToAmPm = dateString => {
         const date = new Date(dateString);
@@ -35,66 +50,54 @@ const Notification = () => {
         return hours + ':' + minutesStr + ' ' + ampm;
     };
 
-
     const [medicineName, setMedicineName] = useState('');
     const [details, setDetails] = useState('');
     const [time, setTime] = useState('');
 
-    const loadItems = day => {
-        // Logic to load more items
-    };
-
-    //   const renderItem = item => {
-    //     return (
-    //       <View style={styles.itemContainer}>
-    //         <Text style={styles.itemText}>{item.name}</Text>
-    //       </View>
-    //     );
-    //   };
-    const dataUocThuoc = [
-        {
-            id: '1',
-            title: 'Hoạt Viết dưỡng não',
-            description: '2 viên',
-            day: '2023-11-23 11:00',
-        },
-        {
-            id: '2',
-            title: 'Hoạt Viết dưỡng não',
-            description: '2 viên',
-            day: '2023-11-23 11:00',
-        },
-        {
-            id: '3',
-            title: 'Hoạt Viết dưỡng não',
-            description: '2 viên',
-            day: '2023-11-23 11:00',
-        },
-    ];
+    const loadItems = day => { };
 
     const dataLichKham = [
-        {
-            id: '1',
-            title: 'Hoạt Viết dưỡng não',
-            description: '2 viên',
-            day: '2023-11-23 11:00',
-        },
-        {
-            id: '2',
-            title: 'Hoạt Viết dưỡng não',
-            description: '2 viên',
-            day: '2023-11-23 11:00',
-        },
-        {
-            id: '3',
-            title: 'Hoạt Viết dưỡng não',
-            description: '2 viên',
-            day: '2023-11-23 11:00',
-        },
+       
     ];
+
+    const handleSaveDataUongThuoc = () => {
+        if (selectedDay === null) {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+            const currentDay = currentDate.getDate();
+            const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
+            setSelectedDay(currentDateString);
+        }
+        
+        const selectedDateTime = new Date(selectedDay); // Chuyển đổi selectedDay thành đối tượng Date nếu cần
+        const [hour, minute] = time.split(':'); // Phân tách giờ và phút
+        
+        selectedDateTime.setHours(hour);
+        selectedDateTime.setMinutes(minute);
+        
+        // Áp dụng chênh lệch múi giờ UTC+7
+        selectedDateTime.setMinutes(selectedDateTime.getMinutes() - selectedDateTime.getTimezoneOffset() - 420);
+        
+        const newItem = {
+            id: String(dataUocThuoc.length + 1), // Tạo ID mới duy nhất
+            title: medicineName,
+            description: details,
+            day: selectedDay,
+            time : selectedDateTime.toISOString(),
+            isDone: false,
+        };
+        setDataUocThuoc([...dataUocThuoc, newItem]);
+    };
 
     const renderEmptyData = () => {
         return <View></View>;
+    };
+
+    const handleDayPress = day => {
+        // Xử lý khi ngày được chọn
+        const selectedDate = new Date(day.dateString);
+        setSelectedDay(selectedDate); // Lưu ngày đã chọn vào state
     };
 
     return (
@@ -138,28 +141,43 @@ const Notification = () => {
                                     }}
                                 />
                                 <View style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: "center" }}>
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
                                         <Text style={{ flex: 0.5, color: 'black' }}>
                                             Nhập tên thuốc
                                         </Text>
-                                        <TextInput style={styles.input}
+                                        <TextInput
+                                            style={styles.input}
                                             value={medicineName}
-                                            onChangeText={text => setMedicineName(text)}
-                                        ></TextInput>
+                                            onChangeText={text => setMedicineName(text)}></TextInput>
                                     </View>
-                                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: "center" }}>
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
                                         <Text style={{ flex: 0.5, color: 'black' }}>Chi Tiết</Text>
-                                        <TextInput style={styles.input}
+                                        <TextInput
+                                            style={styles.input}
                                             value={details}
                                             onChangeText={text => setDetails(text)}></TextInput>
                                     </View>
-                                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: "center" }}>
+                                    <View
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
                                         <Text style={{ flex: 0.5, color: 'black' }}>Thời gian</Text>
-                                        <TextInput style={styles.input}
+                                        <TextInput
+                                            style={styles.input}
                                             value={time}
-                                            onChangeText={text => setTime(text)}
-
-                                        ></TextInput>
+                                            onChangeText={text => setTime(text)}></TextInput>
                                     </View>
                                 </View>
                             </View>
@@ -170,12 +188,15 @@ const Notification = () => {
                                     justifyContent: 'center',
                                 }}>
                                 <TouchableOpacity
-                                    style={{ backgroundColor: "#66B9BE", padding: 5, borderRadius: 5 }}
-                                    onPress={() => { closeModalNhapThuoc() }}
-                                >
-                                    <Text style={{ color: "white" }}>
-                                        Nhập
-                                    </Text>
+                                    style={{
+                                        backgroundColor: '#66B9BE',
+                                        padding: 5,
+                                        borderRadius: 5,
+                                    }}
+                                    onPress={() => {
+                                        closeModalNhapThuoc();
+                                    }}>
+                                    <Text style={{ color: 'white' }}>Nhập</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -195,7 +216,7 @@ const Notification = () => {
                         <Agenda
                             loadItemsForMonth={loadItems}
                             renderEmptyData={renderEmptyData}
-                            onDayPress={day => { }}
+                            onDayPress={handleDayPress} 
                             renderKnob={() => null}
                         />
                     </View>
@@ -225,7 +246,7 @@ const Notification = () => {
                                 <Text style={styles.itemText}>{item.title}</Text>
                                 <Text style={styles.itemText}>{item.description}</Text>
                                 <Text style={styles.itemText}>
-                                    {formatTimeToAmPm(item.day)}
+                                    {formatTimeToAmPm(item.time)}
                                 </Text>
                             </View>
                         </TouchableOpacity>
@@ -257,6 +278,7 @@ const Notification = () => {
                     ))}
                 </View>
             </ScrollView>
+            {   console.log(dataUocThuoc)}
         </SafeAreaView>
     );
 };
@@ -283,6 +305,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     input: {
+        color: 'black',
         flex: 1,
         borderWidth: 1,
         borderColor: '#CCCCCC',
