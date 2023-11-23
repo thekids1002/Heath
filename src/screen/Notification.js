@@ -18,12 +18,47 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uocThuocStore from '../store/UocThuocStore';
 import LichKhamStore from '../store/LichKhamStore';
 import lichKhamStore from '../store/LichKhamStore';
+import notifee from '@notifee/react-native';
+
+import { AndroidColor } from '@notifee/react-native';
+
 
 const dataUocThuocArr = [];
 const dataLichKhamArr = [];
 const Notification = () => {
 
-
+  const handlePushNotification = async (dateString, timeString, title) => {
+    await notifee.requestPermission();
+  
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+  
+    // Tạo đối tượng Date từ ngày và giờ
+    const scheduledTime = new Date(`${dateString}T${timeString}`);
+  
+    // Tính toán khoảng thời gian chờ (miliseconds)
+    const now = new Date();
+    const timeout = scheduledTime.getTime() - now.getTime();
+  
+    // Kiểm tra nếu thời gian đã qua
+    if (timeout < 0) {
+      console.log('Thời gian đã chọn đã qua.');
+      return;
+    }
+  
+    // Lên lịch thông báo
+    setTimeout(async () => {
+      await notifee.displayNotification({
+        title: 'Notification',
+        body: title,
+        android: {
+          channelId,
+        },
+      });
+    }, timeout);
+  };
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedItem2, setSelectedItem2] = useState(null);
@@ -176,6 +211,8 @@ const Notification = () => {
     changeDay('2023-01-01');
     setSelectedDay(temp);
 
+
+    handlePushNotification(selectedDay,time,"Đã đến giờ uống thuốc rồi");
    
   };
 
@@ -223,6 +260,9 @@ const Notification = () => {
     };
     changeDay('2023-01-01');
     setSelectedDay(temp);
+    handlePushNotification(selectedDay,time,"Đã đến giờ đi khám rồi");
+
+
   };
 
   const renderEmptyData = () => {
