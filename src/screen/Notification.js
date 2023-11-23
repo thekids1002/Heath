@@ -432,7 +432,7 @@ const Notification = () => {
                             key={item.id}
                             style={styles.touchableOpacityStyle}
                             onPress={() => {
-                                setModalVisible(true);
+                                openItemModal(item);
                             }}>
                             <Image
                                 source={require('../img/Group53.png')}

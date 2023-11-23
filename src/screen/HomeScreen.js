@@ -9,8 +9,41 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-
+import uocThuocStore from '../store/UocThuocStore';
+import LichKhamStore from '../store/LichKhamStore';
+import lichKhamStore from '../store/LichKhamStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const HomeScreen = () => {
+  const getData1 = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('my-keyy');
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+      console.log(e,"Looxi")
+    }
+  };
+  const getData2 = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('my-key');
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+      console.log(e,"Looxi")
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const data1 = await getData1();
+      const data2 = await getData2();
+  
+      uocThuocStore.dataUocThuoc = data1;
+      lichKhamStore.dataLichKham = data2;
+    } catch (error) {
+      console.log(error, "Looxi");
+    }
+  };
+  
+  fetchData();
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
